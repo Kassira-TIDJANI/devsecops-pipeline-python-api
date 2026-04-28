@@ -9,26 +9,27 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation des dépendances de compilation si nécessaire
-COPY api/requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # Étape 2 : Final
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Récupération uniquement des librairies installées à l'étape précédente
-COPY --from=builder /root/.local /root/.local
-COPY api/ .
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Sécurité : On ne lance jamais l'app en tant que "root"
+# Sécurité 
 RUN useradd -m devsecops
-USER devsecops
 
-# Variable d'environnement pour que Python trouve les librairies
-ENV PATH=/root/.local/bin:$PATH
+# Récupération uniquement des librairies installées à l'étape précédente
+COPY --from=builder --chown=devsecops:devsecops /install /usr/local
+COPY --chown=devsecops:devsecops . .
+
+USER devsecops
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD [ "flask", "run", "--host=0.0.0.0"]
