@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: devsecops-pipeline-python-api-db_beer:latest 
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: beer
+      MYSQL_USER: user_beer
+      MYSQL_PASSWORD: userbeer_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql/beer.sql:/docker-entrypoint-initdb.d/beer.sql
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager 
+
+  api:
+    image: devsecops-pipeline-python-api-api:latest 
+    ports:
+      - "80:5000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  db_data: 
