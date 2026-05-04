@@ -29,8 +29,10 @@ class BeerController:
                     })
             return jsonify(beers)
         except Exception as e:
-            print(e)
-            return False
+            import traceback
+            print("--- ERREUR CRITIQUE BASE DE DONNEES ---")
+            print(traceback.format_exc()) 
+            return jsonify({"error": str(e)}), 500
 
     def getCAByFabricant(self):
         try :
@@ -53,8 +55,10 @@ class BeerController:
                 return jsonify(beers)
             return jsonify({"message":"Nothing fetched"})
         except Exception as e:
-            print(e)
-            return False
+            import traceback
+            print("--- ERREUR CRITIQUE BASE DE DONNEES ---")
+            print(traceback.format_exc()) 
+            return jsonify({"error": str(e)}), 500
 
     def getVariation(self):
         try :
@@ -78,8 +82,10 @@ class BeerController:
                 return jsonify(beers)
             return False
         except Exception as e:
-            print(e)
-            return False
+            import traceback
+            print("--- ERREUR CRITIQUE BASE DE DONNEES ---")
+            print(traceback.format_exc()) 
+            return jsonify({"error": str(e)}), 500
 
 
     def doc(self):
