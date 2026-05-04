@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build image_API
-        run: docker build -t my-api:latest ./api/app
+        run: docker build -t my-api:latest ./api
 
       - name: Build Database_image
         run: docker build -t devsecops-pipeline-python-api-db_beer:latest ./sql
